@@ -5,12 +5,17 @@
     <title>@yield('title', 'Hospital - Panel Pacientes')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Bootstrap CSS desde CDN --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+    {{-- Google Font opcional --}}
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    {{-- Bootstrap CSS --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    {{-- Estilos propios --}}
+    <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+</head>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white mb-4">
     <div class="container">
         <a class="navbar-brand" href="{{ route('panel.home') }}">Hospital</a>
 
@@ -21,29 +26,38 @@
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('panel.home') }}">Inicio</a>
+                    <a class="nav-link {{ request()->routeIs('panel.home') ? 'active' : '' }}"
+                       href="{{ route('panel.home') }}">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('panel.servicios') }}">Servicios</a>
+                    <a class="nav-link {{ request()->routeIs('panel.servicios') ? 'active' : '' }}"
+                       href="{{ route('panel.servicios') }}">Servicios</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('panel.faq') }}">Preguntas frecuentes</a>
+                    <a class="nav-link {{ request()->routeIs('panel.faq') ? 'active' : '' }}"
+                       href="{{ route('panel.faq') }}">Preguntas frecuentes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('panel.contacto') }}">Contacto</a>
+                    <a class="nav-link {{ request()->routeIs('panel.contacto') ? 'active' : '' }}"
+                       href="{{ route('panel.contacto') }}">Contacto</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-
 <main class="container mb-4">
     @yield('content')
 </main>
 
-<footer class="bg-light py-3">
-    <div class="container text-center">
-        <small>&copy; {{ date('Y') }} Hospital. Todos los derechos reservados.</small>
+<footer class="footer py-3 mt-5">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <div>
+            &copy; {{ date('Y') }} Hospital. Todos los derechos reservados.
+        </div>
+        <div class="mt-2 mt-md-0">
+            <span class="me-3">Información para pacientes</span>
+            <span>Atención 24h en urgencias</span>
+        </div>
     </div>
 </footer>
 
