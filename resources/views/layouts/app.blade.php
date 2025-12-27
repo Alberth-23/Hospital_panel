@@ -41,6 +41,11 @@
                     <a class="nav-link {{ request()->routeIs('panel.contacto') ? 'active' : '' }}"
                        href="{{ route('panel.contacto') }}">Contacto</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{request()->routeIs('panel.informacion') ? 'active' : ''}}"
+                        href="{{route('panel.informacion')}}"> Info paciente</a>
+                </li>
             </ul>
         </div>
     </div>

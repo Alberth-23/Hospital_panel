@@ -60,4 +60,9 @@ class PanelPacienteController extends Controller
         // Estos datos podrías pasarlos también desde aquí si quieres
         return view('panel.contacto');
     }
+
+    public function informacion()
+    {
+        return view('panel.informacion');
+    }
 }
