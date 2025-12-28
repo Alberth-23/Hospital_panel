@@ -25,28 +25,52 @@
 
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('panel.home') ? 'active' : '' }}"
-                       href="{{ route('panel.home') }}">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('panel.servicios') ? 'active' : '' }}"
-                       href="{{ route('panel.servicios') }}">Servicios</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('panel.faq') ? 'active' : '' }}"
-                       href="{{ route('panel.faq') }}">Preguntas frecuentes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('panel.contacto') ? 'active' : '' }}"
-                       href="{{ route('panel.contacto') }}">Contacto</a>
-                </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('panel.home') ? 'active' : '' }}"
+           href="{{ route('panel.home') }}">Inicio</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('panel.servicios') ? 'active' : '' }}"
+           href="{{ route('panel.servicios') }}">Servicios</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('panel.faq') ? 'active' : '' }}"
+           href="{{ route('panel.faq') }}">Preguntas frecuentes</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('panel.contacto') ? 'active' : '' }}"
+           href="{{ route('panel.contacto') }}">Contacto</a>
+    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link {{request()->routeIs('panel.informacion') ? 'active' : ''}}"
-                        href="{{route('panel.informacion')}}"> Info paciente</a>
-                </li>
-            </ul>
+    @guest
+        <li class="nav-item ms-2">
+            <a class="btn btn-outline-primary btn-sm" href="{{ route('login') }}">
+                Iniciar sesión
+            </a>
+        </li>
+        <li class="nav-item ms-2">
+            <a class="btn btn-primary btn-sm" href="{{ route('register') }}">
+                Registrarse
+            </a>
+        </li>
+    @endguest
+
+    @auth
+        <li class="nav-item ms-3 d-flex align-items-center">
+            <span class="text-muted small me-2">
+                {{ Auth::user()->name }}
+            </span>
+        </li>
+        <li class="nav-item">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    Cerrar sesión
+                </button>
+            </form>
+        </li>
+    @endauth
+</ul>
         </div>
     </div>
 </nav>
