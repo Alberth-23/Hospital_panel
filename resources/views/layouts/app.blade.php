@@ -2,20 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'Hospital - Panel Pacientes')</title>
+    <title>@yield('title', 'Hospital - Panel de Información para Pacientes')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Google Font opcional --}}
+    {{-- Fuente opcional --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
     {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    {{-- Estilos propios --}}
+    {{-- Estilos propios (opcional, si tienes public/css/custom.css) --}}
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
 </head>
+<body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white mb-4">
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
         <a class="navbar-brand" href="{{ route('panel.home') }}">Hospital</a>
 
@@ -24,68 +27,125 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav ms-auto">
-    <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('panel.home') ? 'active' : '' }}"
-           href="{{ route('panel.home') }}">Inicio</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('panel.servicios') ? 'active' : '' }}"
-           href="{{ route('panel.servicios') }}">Servicios</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('panel.faq') ? 'active' : '' }}"
-           href="{{ route('panel.faq') }}">Preguntas frecuentes</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('panel.contacto') ? 'active' : '' }}"
-           href="{{ route('panel.contacto') }}">Contacto</a>
-    </li>
+            {{-- Menú público principal --}}
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('panel.home') ? 'active' : '' }}"
+                       href="{{ route('panel.home') }}">
+                        Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('panel.servicios') ? 'active' : '' }}"
+                       href="{{ route('panel.servicios') }}">
+                        Servicios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('panel.faq') ? 'active' : '' }}"
+                       href="{{ route('panel.faq') }}">
+                        Preguntas frecuentes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('panel.contacto') ? 'active' : '' }}"
+                       href="{{ route('panel.contacto') }}">
+                        Contacto
+                    </a>
+                </li>
+            </ul>
 
-    @guest
-        <li class="nav-item ms-2">
-            <a class="btn btn-outline-primary btn-sm" href="{{ route('login') }}">
-                Iniciar sesión
-            </a>
-        </li>
-        <li class="nav-item ms-2">
-            <a class="btn btn-primary btn-sm" href="{{ route('register') }}">
-                Registrarse
-            </a>
-        </li>
-    @endguest
+            {{-- Zona derecha: auth / guest --}}
+            <ul class="navbar-nav ms-auto align-items-center">
+                @auth
+                    @php
+                        $user = Auth::user();
 
-    @auth
-        <li class="nav-item ms-3 d-flex align-items-center">
-            <span class="text-muted small me-2">
-                {{ Auth::user()->name }}
-            </span>
-        </li>
-        <li class="nav-item">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn btn-outline-danger btn-sm">
-                    Cerrar sesión
-                </button>
-            </form>
-        </li>
-    @endauth
-</ul>
+                        // ¿Tiene portal de paciente?
+                        $hasPatient = $user->relationLoaded('patient')
+                            ? (bool) $user->patient
+                            : $user->patient()->exists();
+
+                        // ¿Es admin?
+                        $isAdmin = \Illuminate\Support\Facades\DB::table('user_roles')
+                            ->join('roles', 'roles.id', '=', 'user_roles.role_id')
+                            ->where('user_roles.user_id', $user->id)
+                            ->where('roles.name', 'admin')
+                            ->exists();
+                    @endphp
+
+                    @if ($hasPatient)
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('patient.*') ? 'active' : '' }}"
+                               href="{{ route('patient.dashboard') }}">
+                                Portal paciente
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($isAdmin)
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}"
+                               href="{{ route('admin.dashboard') }}">
+                                Admin
+                            </a>
+                        </li>
+                    @endif
+
+                    <li class="nav-item ms-3 d-flex align-items-center">
+                        <span class="text-muted small me-2">
+                            {{ $user->name }}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                @endauth
+
+                @guest
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-outline-primary btn-sm" href="{{ route('login') }}">
+                            Iniciar sesión
+                        </a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-primary btn-sm" href="{{ route('register') }}">
+                            Registrarse
+                        </a>
+                    </li>
+                @endguest
+            </ul>
         </div>
     </div>
 </nav>
-<main class="container mb-4">
+
+{{-- Mensajes flash (bienvenida, hasta luego, perfil actualizado, etc.) --}}
+@if (session('message'))
+    <div class="container mt-3">
+        <div class="alert alert-{{ session('message_type', 'success') }} alert-dismissible fade show" role="alert">
+            {{ session('message') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    </div>
+@endif
+
+<main class="container py-4">
     @yield('content')
 </main>
 
-<footer class="footer py-3 mt-5">
+<footer class="footer py-3 mt-5 bg-light border-top">
     <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
         <div>
             &copy; {{ date('Y') }} Hospital. Todos los derechos reservados.
         </div>
-        <div class="mt-2 mt-md-0">
+        <div class="mt-2 mt-md-0 small text-muted">
             <span class="me-3">Información para pacientes</span>
-            <span>Atención 24h en urgencias</span>
+            <span>Urgencias 24h</span>
         </div>
     </div>
 </footer>
